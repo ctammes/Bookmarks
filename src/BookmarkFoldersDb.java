@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 public class BookmarkFoldersDb extends Sqlite{
 
     private int id;
+    private int parent_id;
     private String titel;
 
     public int getId() {
@@ -16,6 +17,14 @@ public class BookmarkFoldersDb extends Sqlite{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getParent_id() {
+        return parent_id;
+    }
+
+    public void setParent_id(int parent_id) {
+        this.parent_id = parent_id;
     }
 
     public String getTitel() {
@@ -29,7 +38,7 @@ public class BookmarkFoldersDb extends Sqlite{
     public BookmarkFoldersDb(String dir, String db) {
         super(dir, db);
         openDb();
-        createQuery();
+        createBookmarkFolder();
     }
 
     public void sluitDb() {
@@ -40,9 +49,10 @@ public class BookmarkFoldersDb extends Sqlite{
      * Maak nieuwe database
      * @return
      */
-    public boolean createQuery() {
+    public boolean createBookmarkFolder() {
         String sql = "CREATE TABLE IF NOT EXISTS bookmarkfolders (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                "    parent_id INTEGER NULL DEFAULT NULL," +
                 "    titel TEXT NOT NULL" +
                 ");";
         return executeNoResult(sql);
@@ -53,13 +63,32 @@ public class BookmarkFoldersDb extends Sqlite{
      * @param titel
      * @return
      */
-    public boolean schrijfBookmarkFolder(String titel) {
+    public int schrijfBookmarkFolder(int parentId, String titel) {
 
+        String values = String.format("'%d', '%s'",
+                parentId, titel);
         String sql = "insert into bookmarkfolders" +
-                " (titel)" +
-                " values (" + titel + ")";
+                " (parent_id, titel)" +
+                " values (" + values + ")";
         executeNoResult(sql);
-        return false;
+        return getMaxId();
+
+    }
+
+    private int getMaxId() {
+        String sql = "select max(id) max_id from  bookmarkfolders;";
+        ResultSet rst = execute(sql);
+
+        int result = -1;
+        try {
+            while (rst.next()) {
+                result = rst.getInt("max_id");
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
 
     }
 
@@ -68,7 +97,7 @@ public class BookmarkFoldersDb extends Sqlite{
      * @param titel
      * @return
      */
-    public int getBookmarkFolderId(String titel) {
+    public int getBookmarkFolderByTitel(String titel) {
         String sql = "select id from  bookmarkfolders" +
                 " where titel = '" + titel + "';";
         ResultSet rst = execute(sql);
@@ -83,7 +112,30 @@ public class BookmarkFoldersDb extends Sqlite{
         }
 
         return result;
+    }
+
+    /**
+     * Geef de parent_id
+     * @param id
+     * @return
+     */
+    public int getParentId(int id) {
+        String sql = "select parent_id from  bookmarkfolders" +
+                " where id = " + id + ";";
+        ResultSet rst = execute(sql);
+
+        int result = -1;
+        try {
+            while (rst.next()) {
+                result = rst.getInt("parent_id");
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
 
 
     }
+
 }

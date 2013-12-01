@@ -2,6 +2,8 @@ import nl.ctammes.common.MijnIni;
 import nl.ctammes.common.MijnLog;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.logging.Level;
 
@@ -12,16 +14,44 @@ public class BookmarkForm {
     protected JPanel mainPanel;
     private JTextField txtFilenaam;
     private JButton btnFileChooser;
+    private JButton btnVerwerk;
+    private JLabel lblFolder;
+    private JLabel lblTitel;
 
     private static MijnIni ini = null;
     private static String inifile = "Bookmarks.ini";
 
     private static String dbDir = "/home/chris/IdeaProjects/java/Bookmarks";
-    private static String dbNaam = "Bookmarks";
+    private static String dbNaam = "Bookmarks.db";
+    private static String bookmarkFile = "/home//chris//IdeaProjects/java/Bookmarks/bookmarks.html";
 
     static Utility util;
 
     public BookmarkForm() {
+        txtFilenaam.setText(bookmarkFile);
+
+        btnFileChooser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFileChooser fc = new JFileChooser();
+                fc.setCurrentDirectory(new File(txtFilenaam.getText()).getParentFile());
+                fc.setDialogTitle("Selecteer bookmark bestand");
+                fc.setDialogType(JFileChooser.OPEN_DIALOG);
+                fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    txtFilenaam.setText(fc.getSelectedFile().toString());
+                    bookmarkFile= txtFilenaam.getText();
+                } else {
+                    util.getLog().info("No Selection ");
+                }
+            }
+        });
+        btnVerwerk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                util.verwerkBookmarkFile(txtFilenaam.getText().toString(), lblFolder, lblTitel);
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -67,6 +97,7 @@ public class BookmarkForm {
         JFrame frame = new JFrame("BookmarkForm");
         frame.setContentPane(new BookmarkForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocation(100, 100);
         frame.pack();
         frame.setVisible(true);
     }

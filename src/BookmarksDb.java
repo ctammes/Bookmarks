@@ -7,6 +7,7 @@ public class BookmarksDb extends Sqlite {
 
     private int id;
     private int folder_id;
+    private String titel;
     private String url;
 
     public int getId() {
@@ -25,6 +26,14 @@ public class BookmarksDb extends Sqlite {
         this.folder_id = folder_id;
     }
 
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -36,7 +45,7 @@ public class BookmarksDb extends Sqlite {
     public BookmarksDb(String dir, String db) {
         super(dir, db);
         openDb();
-        createQuery();
+        createBookmark();
     }
 
     public void sluitDb() {
@@ -47,24 +56,24 @@ public class BookmarksDb extends Sqlite {
      * Maak nieuwe database
      * @return
      */
-    public boolean createQuery() {
+    public boolean createBookmark() {
         String sql = "CREATE TABLE IF NOT EXISTS bookmarks (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                "    url INTEGER NOT NULL, " +
+                "    folder_id INTEGER NOT NULL, " +
+                "    titel TEXT NOT NULL, " +
                 "    url TEXT NOT NULL" +
                 ");";
         return executeNoResult(sql);
     }
 
-    public boolean schrijfBookmark(Bookmark bookmark) {
+    public boolean schrijfBookmark(int folderId, String titel, String url) {
 
-        // TODO folderId aanpassen!!
-        int folderId = 1;
-        String url = bookmark.getUrl().replaceAll("'", "''");
-        String values = String.format("'%d', '%s'",
-                folderId, url);
+        titel = titel.replaceAll("'", "''");
+        url = url.replaceAll("'", "''");
+        String values = String.format("'%d', '%s', '%s'",
+                folderId, titel, url);
         String sql = "insert into bookmarks" +
-                " (folder_id, url)" +
+                " (folder_id, titel, url)" +
                 " values (" + values + ")";
         executeNoResult(sql);
         return false;
