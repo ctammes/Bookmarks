@@ -4,7 +4,9 @@
 public class Bookmark {
 
     private int id;
+    private String parentfolder;
     private String folder;
+    private String titel;
     private String url;
 
     public int getId() {
@@ -15,12 +17,28 @@ public class Bookmark {
         this.id = id;
     }
 
+    public String getParentfolder() {
+        return parentfolder;
+    }
+
+    public void setParentfolder(String parentfolder) {
+        this.parentfolder = parentfolder;
+    }
+
     public String getFolder() {
         return folder;
     }
 
     public void setFolder(String folder) {
         this.folder = folder;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
     }
 
     public String getUrl() {
@@ -34,8 +52,10 @@ public class Bookmark {
     public Bookmark() {
     }
 
-    public Bookmark(String folder, String url) {
+    public Bookmark(String parentfolder, String folder, String titel, String url) {
+        this.parentfolder = parentfolder;
         this.folder = folder;
+        this.titel = titel;
         this.url = url;
     }
 

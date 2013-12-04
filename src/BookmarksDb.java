@@ -1,5 +1,7 @@
 import nl.ctammes.common.Sqlite;
 
+import java.sql.ResultSet;
+
 /**
  * Created by chris on 1-12-13.
  */
@@ -80,5 +82,45 @@ public class BookmarksDb extends Sqlite {
 
     }
 
+    public Bookmark leesBookmark(int id) {
+        String sql = "select f2.titel titel1, f1.titel titel2, b.titel titel3, b.url from bookmarks b " +
+                "join bookmarkfolders f1 on b.folder_id = f1.id " +
+                "join bookmarkfolders f2 on f1.parent_id = f2.id " +
+                "where b.id = '" + id + "';";
+        ResultSet rst = execute(sql);
+
+        Bookmark result = null;
+        try {
+            while (rst.next()) {
+                result = new Bookmark(rst.getString("titel1"), rst.getString("titel2"), rst.getString("titel3"), rst.getString("url"));
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
+
+    }
+
+    public ResultSet leesBookmarkLijst() {
+        String sql = "select distinct f2.titel parentfolder, f1.titel folder, b.titel titel, b.url from bookmarks b " +
+                "join bookmarkfolders f1 on b.folder_id = f1.id " +
+                "join bookmarkfolders f2 on f1.parent_id = f2.id " +
+                "order by f2.id;";
+        ResultSet rst = execute(sql);
+
+//        Bookmark result = null;
+        ResultSet result = null;
+        try {
+            result = rst;
+//            while (rst.next()) {
+//                result = new Bookmark(rst.getString("parentfolder"), rst.getString("folder"), rst.getString("titel3"), rst.getString("url"));
+//            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
+    }
 
 }

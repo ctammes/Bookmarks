@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.sql.ResultSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,9 +12,11 @@ import java.util.regex.Pattern;
  * Created by chris on 1-12-13.
  */
 public class BookmarkFormTest {
+    static Utility util;
+
     @Before
     public void setUp() throws Exception {
-
+        util = Utility.getInstance();
     }
 
     @Test
@@ -89,5 +92,45 @@ public class BookmarkFormTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testSchrijfFile() throws Exception {
+        String file = "/home//chris//IdeaProjects/java/Bookmarks/bookmarks_test.html";
+        util.schrijfBookmarkFile(file);
+
+    }
+
+    @Test
+    public void testLeesBookmarks() throws Exception {
+        String dbDir = "/home/chris/IdeaProjects/java/Bookmarks";
+        String dbNaam = "Bookmarks_01-11-13.db";
+        util.setDbBookmarks(new BookmarksDb(dbDir, dbNaam));
+
+//        Bookmark bm = null;
+//        String parent = "";
+//        for (int i=1; i<20; i++) {
+//            bm = util.getDbBookmarks().leesBookmark(i);
+//            if (!parent.equals(bm.getParentfolder())) {
+//                parent = bm.getParentfolder();
+//                System.out.println(parent);
+//            }
+//            System.out.printf("\t%s/%s: %s\n", bm.getFolder(), bm.getTitel(), bm.getUrl());
+//        }
+
+
+        String parent = "";
+        ResultSet rst = util.getDbBookmarks().leesBookmarkLijst();
+        int i=0;
+        while (rst.next()) {
+            if (!parent.equals(rst.getString("parentfolder"))) {
+                parent = rst.getString("parentfolder");
+                System.out.println(parent);
+            }
+            System.out.printf("\t%s/%s: %s\n", rst.getString("folder"), rst.getString("titel"), rst.getString("url"));
+            if (i++ > 20) { break; }
+        }
+
+
     }
 }
