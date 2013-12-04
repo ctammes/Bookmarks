@@ -169,8 +169,10 @@ public class Utility {
                             bw.write("<H1>Bookmarks</H1>\n<DL><p>\n");
                             tabs += "\t";
                         } else {
-                            tabs = tabs.substring(0,tabs.length()-1);
-                            bw.write(tabs + folderEinde);
+                            if (!folder.equals(rst.getString("parentfolder"))) {
+                                tabs = tabs.substring(0,tabs.length()-1);
+                                bw.write(tabs + folderEinde);
+                            }
                         }
                         parent = rst.getString("parentfolder");
                         folder = rst.getString("folder");

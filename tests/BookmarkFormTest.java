@@ -130,7 +130,39 @@ public class BookmarkFormTest {
             System.out.printf("\t%s/%s: %s\n", rst.getString("folder"), rst.getString("titel"), rst.getString("url"));
             if (i++ > 20) { break; }
         }
+    }
+
+    @Test
+    public void testLees1() throws Exception {
+        String dbDir = "/home/chris/IdeaProjects/java/Bookmarks";
+        String dbNaam = "Bookmarks_01-11-13.db";
+        util.setDbBookmarks(new BookmarksDb(dbDir, dbNaam));
+
+        String parent = "";
+        String tabs = "";
+        ResultSet parents = util.getDbBookmarks().leesParentIdLijst();
+        int i = 0;
+        while (parents.next()) {
+            int parent_id = parents.getInt("parent_id");
+            ResultSet bookmarks = util.getDbBookmarks().leesBookmarkLijstByParentId(parent_id);
+            if (bookmarks != null) {
+                // schrijf bookmarks
+                while (bookmarks.next()) {
+                    if (!parent.equals(bookmarks.getString("parentfolder"))) {
+                        parent = bookmarks.getString("parentfolder");
+                        System.out.println(tabs + parent);
+                        tabs += "\t";
+                    }
+                    System.out.printf(tabs + "%s/%s: %s\n", bookmarks.getString("folder"), bookmarks.getString("titel"), bookmarks.getString("url"));
+                }
+                if (tabs.length() > 0) {
+                    tabs = tabs.substring(0, tabs.length()-1);
+                }
+            }
+            if (i++ > 20) { break; }
+        }
 
 
     }
+
 }
