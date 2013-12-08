@@ -166,4 +166,50 @@ public class BookmarksDb extends Sqlite {
         return result;
     }
 
+    /**
+     * Lees bookmarks achter de parentfolder
+     * @param parentfolder
+     * @return
+     */
+    public ResultSet leesBookmarkLijstByParentFolder(String parentfolder, String folder) {
+        String sql = "select distinct f2.titel parentfolder, f1.titel folder, b.titel titel, b.url from bookmarks b " +
+                "join bookmarkfolders f1 on b.folder_id = f1.id " +
+                "join bookmarkfolders f2 on f1.parent_id = f2.id " +
+                "where f2.titel = '" + parentfolder + "' and f1.titel = '" + folder + "'" ;
+        ResultSet rst = execute(sql);
+
+        ResultSet result = null;
+        try {
+            result = rst;
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
+    }
+
+    /**
+     * Lees folders achter de parentfolder
+     * @param parentfolder
+     * @return
+     */
+    public ResultSet leesFolderLijst(String parentfolder) {
+        String sql = "select distinct f1.titel folder from bookmarks b\n" +
+                "    join bookmarkfolders f1 on b.folder_id = f1.id\n" +
+                "    join bookmarkfolders f2 on f1.parent_id = f2.id\n" +
+                "    where f2.titel = '" + parentfolder + "'\n" +
+                "    order by f2.titel;";
+        ResultSet rst = execute(sql);
+
+        ResultSet result = null;
+        try {
+            result = rst;
+        } catch(Exception e) {
+            System.out.println(e.getMessage() + " - " + sql);
+        }
+
+        return result;
+    }
+
+
 }
